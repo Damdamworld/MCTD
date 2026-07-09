@@ -4,14 +4,6 @@ A web-based Formal Language & Automata project that detects suspicious marketpla
 
 No AI/ML model is used as the core logic. The detector is transparent: every result shows the matched Regex indicators, DFA input symbols, transition trace, final state, and risk explanation.
 
-## Team
-
-| Name | Student ID | Role |
-|---|---:|---|
-| Zevilia | 030202400014 | Frontend UI and user flow |
-| Gesya Nabilla Estu Balqis | 03020240006 | Rule testing and documentation |
-| Muhamad Nuralif Adam Laode | 030202400010 | Regex-DFA logic and integration |
-
 ## FLA Concept
 
 ### Alphabet
