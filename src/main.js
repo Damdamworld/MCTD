@@ -1,22 +1,26 @@
 import './style.css';
-import { analyzeText, DFA_TRANSITIONS, REGEX_RULES, STATES, TOKEN_MEANINGS } from './engine/analyzer.js';
+import { analyzeText, DFA_TRANSITIONS, INDICATOR_GUIDE, REGEX_RULES, STATES, TOKEN_MEANINGS } from './engine/analyzer.js';
 
 const examples = [
-  {
-    label: 'High Risk',
-    text: 'Barang masih ada. Kalau mau cepat hubungi WhatsApp saya dan transfer DP dulu ke rekening pribadi 123456789012.'
-  },
   {
     label: 'Safe',
     text: 'Produk original, pembayaran melalui aplikasi marketplace, bisa checkout langsung. Garansi mengikuti ketentuan platform.'
   },
   {
+    label: 'Low Risk',
+    text: 'Stok tinggal satu, tapi pembayaran tetap lewat checkout resmi marketplace ya.'
+  },
+  {
     label: 'Medium Risk',
-    text: 'Stok tinggal satu, tapi pembayaran tetap checkout lewat aplikasi marketplace ya.'
+    text: 'Harga murah banget hari ini saja, tapi transaksi tetap aman lewat aplikasi.'
   },
   {
     label: 'High Risk',
-    text: 'Harga murah banget, promo rahasia hari ini. Chat WA saya sekarang juga, bayar langsung saja biar cepat.'
+    text: 'Barang masih ada kak. Kalau serius langsung WA saya saja, transfer DP dulu ke rekening pribadi 123456789012 karena stok tinggal satu.'
+  },
+  {
+    label: 'English Scam',
+    text: 'Please contact me on Telegram. Pay outside platform with bank transfer today only, this is a below market price.'
   }
 ];
 
@@ -79,6 +83,25 @@ app.innerHTML = `
         <h2>Suspicious Terms Found</h2>
       </div>
       <div id="highlightedText" class="highlighted-text">No text analyzed yet.</div>
+    </section>
+
+    <section class="panel guide-panel">
+      <div class="panel-header">
+        <p class="eyebrow">Scam Indicator Guide</p>
+        <h2>What Makes a Text Suspicious?</h2>
+      </div>
+      <div class="guide-grid">
+        ${INDICATOR_GUIDE.map((item) => `
+          <div class="guide-card">
+            <span class="symbol">${item.symbol}</span>
+            <div>
+              <h3>${item.title}</h3>
+              <p>${item.indicator}</p>
+              <small>Examples: ${item.examples.map(escapeHtml).join(', ')}</small>
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </section>
 
     <section id="automata" class="info-grid">
@@ -193,7 +216,7 @@ async function analyzeWithApiFallback(text) {
 }
 
 function renderResult(analysis) {
-  const { result, matches, tokenCount, automataInput, dfa, transitionPath } = analysis;
+  const { result, matches, riskSignals = [], tokenCount, automataInput, dfa, transitionPath } = analysis;
   emptyState.classList.add('hidden');
   resultContent.classList.remove('hidden');
 
@@ -206,7 +229,8 @@ function renderResult(analysis) {
 
     <div class="metric-grid">
       <div><span>${tokenCount}</span><p>Tokens</p></div>
-      <div><span>${matches.length}</span><p>Suspicious Matches</p></div>
+      <div><span>${matches.length}</span><p>Regex Matches</p></div>
+      <div><span>${riskSignals.length}</span><p>Risk Signals</p></div>
       <div><span>${automataInput.join(' ') || 'N'}</span><p>DFA Input</p></div>
     </div>
 
@@ -216,7 +240,14 @@ function renderResult(analysis) {
     </div>
 
     <div class="detail-block">
-      <h4>Detected Indicators</h4>
+      <h4>Distinct Risk Signals Used by DFA</h4>
+      ${riskSignals.length ? `<ol class="trace-list">${riskSignals.map((signal) => `
+        <li><code>${signal.symbol}</code> ${escapeHtml(signal.category)} — first match: <code>${escapeHtml(signal.firstMatch)}</code></li>
+      `).join('')}</ol>` : '<p>No suspicious signal was used by the DFA.</p>'}
+    </div>
+
+    <div class="detail-block">
+      <h4>Detected Regex Matches</h4>
       ${matches.length ? `<ul class="match-list">${matches.map((match) => `
         <li>
           <span class="symbol">${match.symbol}</span>
