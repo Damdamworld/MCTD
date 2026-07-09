@@ -1,0 +1,29 @@
+{
+  "name": "marketplace-scam-text-detector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Rule-based Marketplace Scam Text Detector using Regex and DFA for Formal Language & Automata project.",
+  "scripts": {
+    "dev": "vite",
+    "dev:vercel": "vercel dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "formal-language",
+    "automata",
+    "dfa",
+    "regex",
+    "marketplace",
+    "scam-detector"
+  ],
+  "author": "Zevilia, Gesya Nabilla Estu Balqis, Muhamad Nuralif Adam Laode",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "latest",
+    "vite": "latest"
+  },
+  "dependencies": {}
+}
